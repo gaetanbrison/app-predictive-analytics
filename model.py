@@ -95,7 +95,8 @@ st.sidebar.markdown("---")
 
 st.sidebar.header("Select Stock Symbol")
 list_symbols = ['AAPL', 'AMZN', 'IBM','MSFT','TSLA','NVDA',
-                    'PG','JPM','WMT','CVX','BAC','PFE','GOOG','FB']
+                    'PG','JPM','WMT','CVX','BAC','PFE','GOOG','FB',
+                'ADBE','AXP','BBY','BA','CSCO','C','DIS','EBAY','ETSY','GE','INTC','JPM']
 dictionary_symbols = {
     'AAPL':'Apple',
     'AMZN':'Amazon',
@@ -111,6 +112,18 @@ dictionary_symbols = {
     'PFE':'Pfizer',
     'GOOG':'Alphabet',
     'FB':'Meta',
+    'ADBE':'Adobe',
+    'AXP':'American Express',
+    'BBY':'Best Buy',
+    'BA':'Bpeing',
+    'CSCO': 'Cisco',
+    'C': 'Citigroup',
+    'DIS': 'Disney',
+    'EBAY': 'eBay',
+    'ETSY': 'Etsy',
+    'GE': 'General Electric',
+    'INTC': 'Intel',
+    'JPM': 'JP Morgan Chase',
 }
 symbols = st.sidebar.multiselect("", list_symbols, list_symbols[:5])
 
@@ -216,7 +229,7 @@ df_master = df_master[df_master['date'] > pd.to_datetime(start_date)]
 
 
 st.subheader(" ")
-st.subheader("01 - Show  Time Series visual")
+st.subheader("01 - Show  Selected Stocks Time Series ")
 st.subheader(" ")
 
 
@@ -509,24 +522,10 @@ plt.legend()
 plt.show()
 st.pyplot()
 
-st.write("##### MSE and RMSE are kpis used to judge on how well our ARIMA model performed in the prediction"
-         f"of future {dictionary_symbols[symbol_forecast]} stock values")
-
-y_forecasted = pred.predicted_mean
-y_truth = df_final5.y['2018-06-01':]
-mse = ((y_forecasted - y_truth) ** 2).mean()
-st.success('The Mean Squared Error is {}'.format(round(mse, 2)))
-st.success('The Root Mean Squared Error is {}'.format(round(np.sqrt(mse), 2)))
-
-st.write('##### Display of last 10 forecasted values ')
-y_forecasted = pred.predicted_mean
-st.dataframe(y_forecasted.tail(10))
-
 snippet = f"""
 
-## Run of one step ahead forecast and calculate goodness of predictions
+## Run of one step ahead forecast
 
-### Part 1
 
 pred = results.get_prediction(start=pd.to_datetime('2018-06-01'), dynamic=False)
 pred_ci = pred.conf_int()
@@ -542,9 +541,28 @@ plt.show()
 st.pyplot()
 
 
+"""
+code_header_placeholder = st.empty()
+snippet_placeholder = st.empty()
+code_header_placeholder.markdown(f"##### Code")
+snippet_placeholder.code(snippet)
 
-### Part 2
 
+st.subheader(" ")
+st.write("##### MSE and RMSE are kpis used to judge on how well our ARIMA model performed in the prediction"
+         f"of future {dictionary_symbols[symbol_forecast]} stock values")
+st.subheader(" ")
+
+y_forecasted = pred.predicted_mean
+y_truth = df_final5.y['2018-06-01':]
+mse = ((y_forecasted - y_truth) ** 2).mean()
+st.success('The Mean Squared Error is {}'.format(round(mse, 2)))
+st.success('The Root Mean Squared Error is {}'.format(round(np.sqrt(mse), 2)))
+
+
+snippet = f"""
+
+## Calculate goodness of predictions
 
 y_forecasted = pred.predicted_mean
 y_truth = df_final5.y['2018-06-01':]
@@ -558,9 +576,29 @@ snippet_placeholder = st.empty()
 code_header_placeholder.markdown(f"##### Code")
 snippet_placeholder.code(snippet)
 
+st.subheader(" ")
+st.write('##### Display of last 10 predictions ')
+st.subheader(" ")
+y_forecasted = pred.predicted_mean
+st.dataframe(y_forecasted.tail(10))
 
 
-st.markdown("### Congrats you know how ARIMA models work 🎉")
+snippet = f"""
+
+## Display Last 10 Predictions 
+
+y_forecasted = pred.predicted_mean
+st.dataframe(y_forecasted.tail(10))
+
+"""
+code_header_placeholder = st.empty()
+snippet_placeholder = st.empty()
+code_header_placeholder.markdown(f"##### Code")
+snippet_placeholder.code(snippet)
+
+
+
+st.markdown("### Congrats you know how ARIMA model works and how to code it 🎉")
 
 
 
@@ -573,7 +611,7 @@ st.markdown("### 👨🏼‍💻 **App Contributors:** ")
 st.image(['images/gaetan.png'], width=100,caption=["Gaëtan Brison"])
 
 st.markdown(f"####  Link to Project Website [here]({'https://github.com/gaetanbrison/app-predictive-analytics'}) 🚀 ")
-
+st.markdown(f"####  Feel free to contribute to the app and give a ⭐️")
 
 
 def image(src_as_string, **style):
